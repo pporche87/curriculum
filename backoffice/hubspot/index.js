@@ -1,4 +1,3 @@
-require('../environment')
 const HubspotClient = require('hubspot');
 const hubspot = new HubspotClient();
 
@@ -71,45 +70,45 @@ const USER_PROPERTIES = [
   // "this_candidate_is_one_of_our_learners_",
 ]
 
-const getAllUsers = (options={}, callback) => {
-  options.count = options.count || 99999
-  options.property = options.property || USER_PROPERTIES
-  hubspot.contacts.get(options, callback)
-}
-
-
-
-const getUserByEmail = (email) => {
+const getAllContacts = (options={}) => {
   return new Promise((resolve, reject) => {
-    hubspot.contacts.getByEmail(email, (error, response) => {
-      if (error) return reject(error)
-
-      const user = {}
-      user.hubspotVid = response.vid
-
-      USER_PROPERTIES.forEach(propName => {
-        const prop = response.properties[propName]
-        if (prop) user[propName] = prop.value
-      })
-
-      if (typeof(user.exit_phase) === 'string'){
-        user.exit_phase = Number.parseInt(user.exit_phase.replace('Phase ',''))
-      }
-      if (typeof(user.phase) === 'string'){
-        user.phase = Number.parseInt(user.phase.replace('Phase ',''))
-      }
-
-      resolve(user)
+    options.count = options.count || 99999
+    options.property = options.property || USER_PROPERTIES.slice()
+    hubspot.contacts.get(options, (error, response) => {
+      error ? reject(error) : resolve(response.contacts)
     })
   })
 }
 
-// client.campaigns.get(function(err, res) {
-//   if (err) { throw err; }
-//   console.log(res);
-// });
+
+const getContactByEmail = (email) => {
+  return new Promise((resolve, reject) => {
+    hubspot.contacts.getByEmail(email, (error, response) => {
+      if (error) return reject(error)
+      if (response.status === 'error') return reject(response.message)
+
+      const contact = {
+        vid: response.vid,
+      }
+
+      USER_PROPERTIES.forEach(propName => {
+        const prop = response.properties[propName]
+        if (prop) contact[propName] = prop.value
+      })
+
+      if (typeof(contact.exit_phase) === 'string'){
+        contact.exit_phase = Number.parseInt(contact.exit_phase.replace('Phase ',''))
+      }
+      if (typeof(contact.phase) === 'string'){
+        contact.phase = Number.parseInt(contact.phase.replace('Phase ',''))
+      }
+
+      resolve(contact)
+    })
+  })
+}
 
 module.exports = {
-  getAllUsers,
-  getUserByEmail,
+  getAllContacts,
+  getContactByEmail,
 }
