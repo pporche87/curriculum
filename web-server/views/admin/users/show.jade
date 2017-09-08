@@ -1,6 +1,23 @@
 extends ../../layout
 
 block content
-  h1 #{user.handle}
+  h1= targetUser.name
+  .row
+    .col-md-5
+      img(src=targetUser.avatarUrl)
+    .col-md-7
+      dl
+        dt GitHub
+        dd
+          a(href=targetUser.profileUrl)= targetUser.handle
 
-  pre= inspect(user)
+        dt Phone
+        dd
+          = targetUser.phone
+
+        dt Date of Birth
+        dd
+          = targetUser.dateOfBirth
+
+  .row
+    pre= inspect(targetUser)

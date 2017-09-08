@@ -1,3 +1,4 @@
+const moment = require('moment')
 const HubspotClient = require('hubspot');
 const hubspot = new HubspotClient();
 
@@ -5,7 +6,10 @@ hubspot.useKey(process.env.HUBSPOT_API_KEY, (error) => {
   if (error) throw error
 });
 
-const USER_PROPERTIES = [
+const Phase = function(){}
+
+
+const USER_PROPERTIES = {
   // "address",
   // "applicant_status",
   // "aptitude_fit",
@@ -21,103 +25,86 @@ const USER_PROPERTIES = [
   // "date_ps_milestone_02_showed_up",
   // "date_ps_milestone_04_withdrew",
   // "days_to_close",
-  "email",
-  "firstname",
-  "lastname",
-  "nickname",
-  "phone",
-  "cell_phone_number",
-  "gender",
-  "race",
-
-  "isa_signed",
-  "lastmodifieddate",
-  "learning_facilitator",
-  "left_at_exit_ramp",
-  "lifecyclestage",
-  "living_stipend_isa_signed",
-  "living_stipend_total",
-  "low_income",
-  "new_laptop_policy_increased_isa_",
-
-
+  "email": String,
+  "firstname": String,
+  "lastname": String,
+  "nickname": String,
+  "phone": Number,
+  "cell_phone_number": Number,
+  "gender": String,
+  "race": String,
+  "isa_signed": Boolean,
+  "lastmodifieddate": Date,
+  "learning_facilitator": String,
+  "left_at_exit_ramp": String,
+  "lifecyclestage": String,
+  "living_stipend_isa_signed": Boolean,
+  "living_stipend_total": Number,
+  "low_income": Boolean,
+  "new_laptop_policy_increased_isa_": Boolean,
   // personal days
-  "pd_days_remaining",
-  "pd_days_used",
-  "personal_days",
-  "personal_days_remaining",
-
-  "phase",
-  "exit_phase",
-  "phase_week",
-
-  "enrollee_start_date",
-  "closedate",
-
+  "pd_days_remaining": Number,
+  "pd_days_used": Number,
+  "personal_days": String,
+  "personal_days_remaining": Number,
+  "phase": Phase,
+  "exit_phase": Phase,
+  "phase_week": Number,
+  "enrollee_start_date": Date,
+  "closedate": Date,
   // phase start dates
-  "date_phase_1",
-  "date_phase_2",
-  "date_phase_3",
-  "date_phase_4",
-  "date_phase_5",
-
+  "date_phase_1": Date,
+  "date_phase_2": Date,
+  "date_phase_3": Date,
+  "date_phase_4": Date,
+  "date_phase_5": Date,
   // phase end dates
-  "end_date_phase_1",
-  "end_date_phase_2",
-  "end_date_phase_3",
-  "end_date_phase_4",
-  "end_date_phase_5",
-
-  "loa_start_date", // Leave of Absence Start Date
-
-  "phase_1_attempt",
-  "phase_2_attempt",
-  "phase_3_attempt",
-  "phase_4_attempt",
-  "phase_5_attempt",
-  "phase_1_interviewer",
-  "phase_2_interviewer",
-  "phase_3_interviewer",
-  "phase_4_interviewer",
-  "phase_5_interviewer",
-
-  "phase_1_interview_outcome",
-  "phase_2_interview_outcome",
-  "phase_3_interview_outcome",
-  "phase_4_interview_outcome",
-  "phase_5_interview_outcome",
-
-  "phase_1_interview_date",
-  "phase_1_interview_date_second_",
-  "phase_1_interview_date_fourth_attempt_",
-  "phase_1_interview_date_third_attempt_",
-  "phase_1_interview_date_fifth_attempt_",
-
-  "phase_2_interview_date",
-  "phase_2_interview_date_second_",
-  "phase_2_interview_date_fourth_attempt_",
-  "phase_2_interview_date_third_attempt_",
-  "phase_2_interview_date_fifth_attempt_",
-
-  "phase_3_interview_date",
-  "phase_3_interview_date_second_",
-  "phase_3_interview_date_fourth_attempt_",
-  "phase_3_interview_date_third_attempt_",
-  "phase_3_interview_date_fifth_attempt_",
-
-  "phase_4_interview_date",
-  "phase_4_interview_date_second_",
-  "phase_4_interview_date_fourth_attempt_",
-  "phase_4_interview_date_third_attempt_",
-  "phase_4_interview_date_fifth_attempt_",
-
-  "phase_5_interview_date",
-  "phase_5_interview_date_second_",
-  "phase_5_interview_date_fourth_attempt_",
-  "phase_5_interview_date_third_attempt_",
-  "phase_5_interview_date_fifth_attempt_",
-
-
+  "end_date_phase_1": Date,
+  "end_date_phase_2": Date,
+  "end_date_phase_3": Date,
+  "end_date_phase_4": Date,
+  "end_date_phase_5": Date,
+  "loa_start_date": String, // Leave of Absence Start Datee
+  "phase_1_attempt": String,
+  "phase_2_attempt": String,
+  "phase_3_attempt": String,
+  "phase_4_attempt": String,
+  "phase_5_attempt": String,
+  "phase_1_interviewer": String,
+  "phase_2_interviewer": String,
+  "phase_3_interviewer": String,
+  "phase_4_interviewer": String,
+  "phase_5_interviewer": String,
+  "phase_1_interview_outcome": String,
+  "phase_2_interview_outcome": String,
+  "phase_3_interview_outcome": String,
+  "phase_4_interview_outcome": String,
+  "phase_5_interview_outcome": String,
+  "phase_1_interview_date": Date,
+  "phase_1_interview_date_second_": Date,
+  "phase_1_interview_date_fourth_attempt_": Date,
+  "phase_1_interview_date_third_attempt_": Date,
+  "phase_1_interview_date_fifth_attempt_": Date,
+  "phase_2_interview_date": Date,
+  "phase_2_interview_date_second_": Date,
+  "phase_2_interview_date_fourth_attempt_": Date,
+  "phase_2_interview_date_third_attempt_": Date,
+  "phase_2_interview_date_fifth_attempt_": Date,
+  "phase_3_interview_date": Date,
+  "phase_3_interview_date_second_": Date,
+  "phase_3_interview_date_fourth_attempt_": Date,
+  "phase_3_interview_date_third_attempt_": Date,
+  "phase_3_interview_date_fifth_attempt_": Date,
+  "phase_4_interview_date": Date,
+  "phase_4_interview_date_second_": Date,
+  "phase_4_interview_date_fourth_attempt_": Date,
+  "phase_4_interview_date_third_attempt_": Date,
+  "phase_4_interview_date_fifth_attempt_": Date,
+  "phase_5_interview_date": Date,
+  "phase_5_interview_date_second_": Date,
+  "phase_5_interview_date_fourth_attempt_": Date,
+  "phase_5_interview_date_third_attempt_": Date,
+  "phase_5_interview_date_fifth_attempt_": Date,
   // "re_committed",
   // "sept_ciiaaa_signed",
   // "should_this_candidate_move_on_to_an_enrollment_game_",
@@ -141,18 +128,13 @@ const USER_PROPERTIES = [
   // "start_date_assigned",
   // "this_aspirant_is_committed_to_becoming_a_software_developer_and_is_a_good_investment_for_lg",
   // "this_candidate_is_one_of_our_learners_",
-]
+}
 
-const BOOLEAN_USER_PROPERTIES = [
-  'isa_signed',
-  'new_laptop_policy_increased_isa_',
-  'living_stipend_isa_signed',
-]
 
 const getAllContacts = (options={}) => {
   return new Promise((resolve, reject) => {
     options.count = options.count || 99999
-    options.property = options.property || USER_PROPERTIES.slice()
+    options.property = options.property || Object.keys(USER_PROPERTIES)
     hubspot.contacts.get(options, (error, response) => {
       error ? reject(error) : resolve(response.contacts)
     })
@@ -165,33 +147,51 @@ const getContactByEmail = (email) => {
     hubspot.contacts.getByEmail(email, (error, response) => {
       if (error) return reject(error)
       if (response.status === 'error') return reject(response.message)
-
-      const contact = {
-        vid: response.vid,
-      }
-
-      USER_PROPERTIES.forEach(propName => {
-        const prop = response.properties[propName]
-        contact[propName] = prop ? prop.value : null
-      })
-
-      if (typeof(contact.exit_phase) === 'string'){
-        contact.exit_phase = Number.parseInt(contact.exit_phase.replace('Phase ',''))
-      }
-
-      if (typeof(contact.phase) === 'string'){
-        contact.phase = Number.parseInt(contact.phase.replace('Phase ',''))
-      }
-
-      BOOLEAN_USER_PROPERTIES.forEach(property => {
-        if (contact[property] === 'true') contact[property] = true
-        if (contact[property] === 'false') contact[property] = false
-      })
-
+      const contact = extractProperties(response)
+      contact.vid = response.vid
       resolve(contact)
     })
   })
 }
+
+const extractProperties = function(response){
+  const properties = {}
+  Object.entries(USER_PROPERTIES).forEach(([propName, propType]) => {
+    const prop = response.properties[propName]
+    if (!prop) {
+      properties[propName] = null
+      return
+    }
+    let value = prop.value
+
+    if (propType === String && typeof value !== 'string')
+      value = String(value)
+
+    if (propType === Boolean && typeof value === 'string')
+      value = value === 'true' ? true : value === 'false' ? false : null
+
+    if (propType === Date && !(value instanceof Date))
+      value = parseDate(value)
+
+    if (propType === Phase && typeof value !== 'number')
+      value = Number.parseInt(value.replace('Phase ',''))
+
+    properties[propName] = value
+  })
+  return properties
+}
+
+const parseDate = input => {
+  let date
+  if (input.toString().match(/^\d+$/)){
+    date = new Date(0)
+    date.setUTCSeconds(Number.parseInt(input) / 1000)
+    return date
+  }
+  throw new InputError(`bad date: ${input}`)
+}
+
+
 
 module.exports = {
   getAllContacts,

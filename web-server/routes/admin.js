@@ -16,8 +16,8 @@ module.exports = app => {
 
   app.get('/admin/users/:handle', (request, response, next) => {
     request.backOffice.getLearnerByHandle(request.params.handle)
-      .then(user => {
-        response.render('admin/users/show', { user })
+      .then(targetUser => {
+        response.render('admin/users/show', { targetUser })
       })
       .catch(next)
 
