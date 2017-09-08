@@ -16,9 +16,9 @@ module.exports = app => {
 
   app.get('/users/:handle', (request, response, next) => {
     const { handle } = request.params
-    request.backOffice.getLearnerByHandle(handle).then(user => {
-      if (!user) return response.renderNotFound()
-      response.render('users/show', { user })
+    request.backOffice.getLearnerByHandle(handle).then(targetUser => {
+      if (!targetUser) return response.renderNotFound()
+      response.render('users/show', { targetUser })
     })
     .catch(next)
   })
