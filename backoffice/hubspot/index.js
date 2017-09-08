@@ -10,8 +10,7 @@ const USER_PROPERTIES = [
   // "applicant_status",
   // "aptitude_fit",
   // "assigned_cohort",
-  // "cell_phone_number",
-  // "closedate",
+
   // "cohort_invited",
   // "comments",
   // "createdate",
@@ -25,26 +24,100 @@ const USER_PROPERTIES = [
   "email",
   "firstname",
   "lastname",
-  "gender",
-  // "isa_signed",
-  // "lastmodifieddate",
-  // "lastname",
-  // "learning_facilitator",
-  // "left_at_exit_ramp",
-  // "lifecyclestage",
-  // "living_stipend_isa_signed",
-  // "living_stipend_total",
-  // "low_income",
-  // "new_laptop_policy_increased_isa_",
   "nickname",
-  // "pd_days_remaining",
-  // "pd_days_used",
-  // "personal_days",
-  // "personal_days_remaining",
+  "phone",
+  "cell_phone_number",
+  "gender",
+  "race",
+
+  "isa_signed",
+  "lastmodifieddate",
+  "learning_facilitator",
+  "left_at_exit_ramp",
+  "lifecyclestage",
+  "living_stipend_isa_signed",
+  "living_stipend_total",
+  "low_income",
+  "new_laptop_policy_increased_isa_",
+
+
+  // personal days
+  "pd_days_remaining",
+  "pd_days_used",
+  "personal_days",
+  "personal_days_remaining",
+
   "phase",
   "exit_phase",
-  // "phone",
-  // "race",
+  "phase_week",
+
+  "enrollee_start_date",
+  "closedate",
+
+  // phase start dates
+  "date_phase_1",
+  "date_phase_2",
+  "date_phase_3",
+  "date_phase_4",
+  "date_phase_5",
+
+  // phase end dates
+  "end_date_phase_1",
+  "end_date_phase_2",
+  "end_date_phase_3",
+  "end_date_phase_4",
+  "end_date_phase_5",
+
+  "loa_start_date", // Leave of Absence Start Date
+
+  "phase_1_attempt",
+  "phase_2_attempt",
+  "phase_3_attempt",
+  "phase_4_attempt",
+  "phase_5_attempt",
+  "phase_1_interviewer",
+  "phase_2_interviewer",
+  "phase_3_interviewer",
+  "phase_4_interviewer",
+  "phase_5_interviewer",
+
+  "phase_1_interview_outcome",
+  "phase_2_interview_outcome",
+  "phase_3_interview_outcome",
+  "phase_4_interview_outcome",
+  "phase_5_interview_outcome",
+
+  "phase_1_interview_date",
+  "phase_1_interview_date_second_",
+  "phase_1_interview_date_fourth_attempt_",
+  "phase_1_interview_date_third_attempt_",
+  "phase_1_interview_date_fifth_attempt_",
+
+  "phase_2_interview_date",
+  "phase_2_interview_date_second_",
+  "phase_2_interview_date_fourth_attempt_",
+  "phase_2_interview_date_third_attempt_",
+  "phase_2_interview_date_fifth_attempt_",
+
+  "phase_3_interview_date",
+  "phase_3_interview_date_second_",
+  "phase_3_interview_date_fourth_attempt_",
+  "phase_3_interview_date_third_attempt_",
+  "phase_3_interview_date_fifth_attempt_",
+
+  "phase_4_interview_date",
+  "phase_4_interview_date_second_",
+  "phase_4_interview_date_fourth_attempt_",
+  "phase_4_interview_date_third_attempt_",
+  "phase_4_interview_date_fifth_attempt_",
+
+  "phase_5_interview_date",
+  "phase_5_interview_date_second_",
+  "phase_5_interview_date_fourth_attempt_",
+  "phase_5_interview_date_third_attempt_",
+  "phase_5_interview_date_fifth_attempt_",
+
+
   // "re_committed",
   // "sept_ciiaaa_signed",
   // "should_this_candidate_move_on_to_an_enrollment_game_",
@@ -70,6 +143,12 @@ const USER_PROPERTIES = [
   // "this_candidate_is_one_of_our_learners_",
 ]
 
+const BOOLEAN_USER_PROPERTIES = [
+  'isa_signed',
+  'new_laptop_policy_increased_isa_',
+  'living_stipend_isa_signed',
+]
+
 const getAllContacts = (options={}) => {
   return new Promise((resolve, reject) => {
     options.count = options.count || 99999
@@ -93,15 +172,22 @@ const getContactByEmail = (email) => {
 
       USER_PROPERTIES.forEach(propName => {
         const prop = response.properties[propName]
-        if (prop) contact[propName] = prop.value
+        contact[propName] = prop ? prop.value : null
       })
 
       if (typeof(contact.exit_phase) === 'string'){
         contact.exit_phase = Number.parseInt(contact.exit_phase.replace('Phase ',''))
       }
+
       if (typeof(contact.phase) === 'string'){
         contact.phase = Number.parseInt(contact.phase.replace('Phase ',''))
       }
+
+
+      BOOLEAN_USER_PROPERTIES.forEach(property => {
+        if (contact[property] === 'true') contact[property] = true
+        if (contact[property] === 'false') contact[property] = false
+      })
 
       resolve(contact)
     })
