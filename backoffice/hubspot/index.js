@@ -183,7 +183,6 @@ const getContactByEmail = (email) => {
         contact.phase = Number.parseInt(contact.phase.replace('Phase ',''))
       }
 
-
       BOOLEAN_USER_PROPERTIES.forEach(property => {
         if (contact[property] === 'true') contact[property] = true
         if (contact[property] === 'false') contact[property] = false

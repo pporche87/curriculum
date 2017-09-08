@@ -1,5 +1,5 @@
 const { idmGraphQLFetch } = require('@learnersguild/idm-jwt-auth/lib/utils')
-const hubspot = require('../hubspot')
+const hubspot = require('./hubspot')
 
 const ROBOT_HANDLES = ['echo-bot','lg-bot']
 
@@ -131,11 +131,11 @@ module.exports = class BackOffice {
     .then(idmUser => {
 
       return idmUser
-        ? hubspot.getUserByEmail(idmUser.email).then(hubspotUser => {
-          console.log({idmUser, hubspotUser})
-          const user = Object.assign({}, idmUser, hubspotUser)
+        ? hubspot.getContactByEmail(idmUser.email).then(hubspotContact => {
+          console.log({idmUser, hubspotContact})
+          const user = Object.assign({}, idmUser, hubspotContact)
           // user.idmUser = idmUser
-          // user.hubspotUser = hubspotUser
+          // user.hubspotContact = hubspotContact
           return user
         })
         : false
