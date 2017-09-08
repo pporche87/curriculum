@@ -1,0 +1,10 @@
+extends ../../layout
+
+block content
+  h1 Users - Admin
+
+  ul
+    for user in users
+      li
+        a(href="/admin/users/#{user.handle}")= user.handle
+        pre= inspect(user)
