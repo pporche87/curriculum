@@ -18,6 +18,12 @@ block content
           &nbsp;
           small= `(week ${targetUser.phase_week}/8)`
 
+        dt Start Date
+        dd
+          = renderDate(targetUser.enrollee_start_date)
+          &nbsp;
+          small= `(${weeksAgoInWords(targetUser.enrollee_start_date)})`
+
         dt GitHub
         dd
           a(href=targetUser.profileUrl)= targetUser.handle
@@ -25,6 +31,10 @@ block content
         dt Hubspot VID
         dd
           a(href="https://app.hubspot.com/contacts/2144508/contact/#{targetUser.vid}/" target="_blank")= targetUser.vid
+
+        dt IDM ID
+        dd
+          a(href="https://echo.learnersguild.org/users/#{targetUser.handle}/" target="_blank")= targetUser.id
 
         dt Phone
         dd
@@ -50,6 +60,10 @@ block content
           = renderDate(targetUser.lastmodifieddate)
           &nbsp;
           small= `(${timeAgoInWords(targetUser.lastmodifieddate)})`
+
+        dt Personal Days
+        dd
+          = `${targetUser.pd_days_used||0}/${targetUser.pd_days_remaining||0}`
 
   .row
     pre= inspect(targetUser)

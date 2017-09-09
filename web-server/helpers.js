@@ -20,6 +20,7 @@ module.exports = app => {
   app.locals.renderDate = date => moment(date).format("YYYY/MM/DD")
   app.locals.renderDatetime = date => moment(date).format("YYYY/MM/DD HH:mm")
   app.locals.timeAgoInWords = date => moment(date).fromNow()
+  app.locals.weeksAgoInWords = date => moment().diff(moment(date), 'week')+' weeks ago'
 
   app.locals.renderSkill = skill =>
     renderMarkdown(skill.rawText).slice(3,-5).trim()
