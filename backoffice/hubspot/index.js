@@ -1,4 +1,3 @@
-const moment = require('moment')
 const HubspotClient = require('hubspot');
 const hubspot = new HubspotClient();
 
@@ -166,6 +165,9 @@ const extractProperties = function(response){
 
     if (propType === String && typeof value !== 'string')
       value = String(value)
+
+    if (propType === Number && typeof value !== 'number')
+      value = Number(value)
 
     if (propType === Boolean && typeof value === 'string')
       value = value === 'true' ? true : value === 'false' ? false : null

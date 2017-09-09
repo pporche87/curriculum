@@ -1,5 +1,6 @@
 const util = require('util')
 const path = require('path')
+const moment = require('moment')
 const fs = require('fs-extra')
 const escapeHTML = require('jade').runtime.escape
 const renderMarkdown = require('./renderMarkdown')
@@ -15,6 +16,10 @@ module.exports = app => {
     })
   app.locals.escapeHTML = escapeHTML
   app.locals.renderMarkdown = renderMarkdown
+
+  app.locals.renderDate = date => moment(date).format("YYYY/MM/DD")
+  app.locals.renderDatetime = date => moment(date).format("YYYY/MM/DD HH:mm")
+  app.locals.timeAgoInWords = date => moment(date).fromNow()
 
   app.locals.renderSkill = skill =>
     renderMarkdown(skill.rawText).slice(3,-5).trim()

@@ -7,9 +7,24 @@ block content
       img(src=targetUser.avatarUrl)
     .col-md-7
       dl
+        dt Name
+        dd= `${targetUser.firstname} (${targetUser.nickname}) ${targetUser.lastname}`
+
+        dt Phase
+        dd
+          span Phase
+          &nbsp;
+          span= targetUser.phase
+          &nbsp;
+          small= `(week ${targetUser.phase_week}/8)`
+
         dt GitHub
         dd
           a(href=targetUser.profileUrl)= targetUser.handle
+
+        dt Hubspot VID
+        dd
+          a(href="https://app.hubspot.com/contacts/2144508/contact/#{targetUser.vid}/" target="_blank")= targetUser.vid
 
         dt Phone
         dd
@@ -17,7 +32,24 @@ block content
 
         dt Date of Birth
         dd
-          = targetUser.dateOfBirth
+          = renderDate(targetUser.dateOfBirth)
+
+        dt Roles
+        dd
+          = targetUser.roles.join(', ')
+
+        dt Created At
+        dd
+          span= renderDate(targetUser.createdAt)
+          &nbsp;
+          small= `(${timeAgoInWords(targetUser.createdAt)})`
+
+
+        dt Last Modified
+        dd
+          = renderDate(targetUser.lastmodifieddate)
+          &nbsp;
+          small= `(${timeAgoInWords(targetUser.lastmodifieddate)})`
 
   .row
     pre= inspect(targetUser)
