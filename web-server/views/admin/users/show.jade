@@ -65,5 +65,16 @@ block content
         dd
           = `${targetUser.pd_days_used||0}/${targetUser.pd_days_remaining||0}`
 
+        for n in [1,2,3,4,5]
+          - phaseStartDate = targetUser[`date_phase_${n}`]
+          dt Started Phase #{n}
+          dd
+            if phaseStartDate
+              = renderDate(phaseStartDate)
+              &nbsp;
+              small= `(${timeAgoInWords(phaseStartDate)})`
+            else
+              | n/a
+
   .row
     pre= inspect(targetUser)
