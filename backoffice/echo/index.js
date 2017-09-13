@@ -10,8 +10,8 @@ class EchoClient {
     return echoGraphQLFetch({query, variables}, this.lgJWT)
   }
 
-  getPhasesForLearners(learners){
-    const identifiers = JSON.stringify(learners.map(l => l.handle))
+  getPhasesForUsers(users){
+    const identifiers = JSON.stringify(users.map(l => l.handle))
     return this.query(`
       query{
         findUsers(identifiers: ${identifiers}){
@@ -23,11 +23,11 @@ class EchoClient {
       }
     `).then(response => {
       response.data.findUsers.forEach(user => {
-        const learner = learners.find(learner => learner.handle === user.handle)
+        const learner = users.find(learner => learner.handle === user.handle)
         if (!learner) return
         if (user.phase) learner.phase = user.phase.number
       })
-      return learners
+      return users
     })
   }
 }

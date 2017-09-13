@@ -28,8 +28,8 @@ const USER_PROPERTIES = {
   "firstname": String,
   "lastname": String,
   "nickname": String,
-  "phone": Number,
-  "cell_phone_number": Number,
+  "phone": String,
+  "cell_phone_number": String,
   "gender": String,
   "race": String,
   "isa_signed": Boolean,
@@ -153,10 +153,30 @@ const getContactByEmail = (email) => {
   })
 }
 
-const extractProperties = function(response){
+const getHubspotDataForUsers = users => {
+  return new Promise((resolve, reject) => {
+    const emails = users.map(user => user.email)
+    hubspot.contacts.getByEmailBatch(emails, (error, response) => {
+      if (error) return reject(error)
+      if (response.status === 'error') return reject(response.message)
+      // console.log('-=-=-=-=-=', response)
+      const contacts = Object.values(response).map(extractProperties)
+      users.forEach(user => {
+        const contact = contacts.find(contact =>
+          contact.email === user.email
+        )
+        if (!contact) return
+        user.hubspot = contact
+      })
+      resolve(users)
+    })
+  })
+}
+
+const extractProperties = function(contact){
   const properties = {}
   Object.entries(USER_PROPERTIES).forEach(([propName, propType]) => {
-    const prop = response.properties[propName]
+    const prop = contact.properties[propName]
     if (!prop) {
       properties[propName] = null
       return
@@ -190,7 +210,7 @@ const parseDate = input => {
     date.setUTCSeconds(Number.parseInt(input) / 1000)
     return date
   }
-  throw new InputError(`bad date: ${input}`)
+  // throw new TypeError(`bad date: ${input}`)
 }
 
 
@@ -198,4 +218,5 @@ const parseDate = input => {
 module.exports = {
   getAllContacts,
   getContactByEmail,
+  getHubspotDataForUsers
 }

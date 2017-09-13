@@ -7,7 +7,10 @@ module.exports = app => {
   })
 
   app.get('/admin/users', (request, response, next) => {
-    request.backOffice.getAllLearners()
+    request.backOffice.getAllUsers({
+      includePhases: true,
+      includeHubspotData: true,
+    })
       .then(users => {
         response.render('admin/users/index', { users })
       })

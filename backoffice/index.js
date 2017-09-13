@@ -18,34 +18,37 @@ module.exports = class BackOffice {
     options = Object.assign(
       // default options
       {
+        active: false,
+        learners: false,
         includePhases: false,
+        includeHubspotData: false,
       },
       options
     )
 
     return this.idm.getAllUsers()
-      .then(learners => {
-        if (options.includePhases) return this.getPhasesForLearners(learners)
-        return learners
+      .then(users => {
+        if (options.learners) users = users.filter(filterForLearners)
+        if (options.active) users = users.filter(filterForActiveUsers)
+        const promises = []
+        if (options.includePhases) promises.push(this.getPhasesForUsers(users))
+        if (options.includeHubspotData) promises.push(this.getHubspotDataForUsers(users))
+        return Promise.all(promises).then(_ => users)
       })
   }
 
-  getActiveUsers(){
-    return this.getAllUsers().then(filterForActive)
+  getActiveUsers(options={}){
+    options.active = true
+    return this.getAllUsers(options)
   }
 
-  getAllLearners(){
-    return this.getAllUsers()
-      .then(users =>
-        users.filter(user =>
-          user.roles.includes('learner') &&
-          !user.roles.includes('staff')
-        )
-      )
+  getAllLearners(options={}){
+    options.learners = true
+    return this.getAllUsers(options)
   }
 
   getActiveLearners(){
-    return this.getAllLearners().then(filterForActive)
+    return this.getAllLearners().then(filterForActiveUsers)
   }
 
   getUserByHandle(handle, options={}){
@@ -66,16 +69,22 @@ module.exports = class BackOffice {
   }
 
 
-  getPhasesForLearners(learners){
-    return this.echo.getPhasesForLearners(learners)
+  getPhasesForUsers(users){
+    return this.echo.getPhasesForUsers(users)
   }
 
+  getHubspotDataForUsers(users){
+    return this.hubspot.getHubspotDataForUsers(users)
+  }
 }
 
+const filterForLearners = users =>
+  users.filter(user =>
+    user.roles.includes('learner') && !user.roles.includes('staff')
+  )
 
-const filterForActive = getAllLearners =>
-  getAllLearners.filter(learner => learner.active)
-
+const filterForActiveUsers = users =>
+  users.filter(user => user.active)
 
 
 const getHubspotDataForUser = user =>
