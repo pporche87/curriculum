@@ -7,8 +7,6 @@ module.exports = app => {
 
   app.get('/users', (request, response, next) => {
     request.backOffice.getActiveLearners().then(users => {
-      response.json(users)
-      return
       response.render('users/index', { users })
     })
     .catch(next)

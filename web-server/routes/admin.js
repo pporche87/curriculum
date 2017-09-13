@@ -15,7 +15,7 @@ module.exports = app => {
   })
 
   app.get('/admin/users/:handle', (request, response, next) => {
-    request.backOffice.getLearnerByHandle(request.params.handle)
+    request.backOffice.getLearnerByHandle(request.params.handle, {includeHubspotData: true})
       .then(targetUser => {
         response.render('admin/users/show', { targetUser })
       })
