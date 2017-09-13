@@ -8,7 +8,10 @@ block content
     .col-md-7
       dl
         dt Name
-        dd= `${targetUser.firstname} (${targetUser.nickname}) ${targetUser.lastname}`
+        dd= targetUser.name
+
+        dt Nickname
+        dd= targetUser.nickname
 
         dt Phase
         dd
@@ -16,13 +19,13 @@ block content
           &nbsp;
           span= targetUser.phase
           &nbsp;
-          small= `(week ${targetUser.phase_week}/8)`
+          small= `(week ${targetUser.currentPhaseStartDate}/8)`
 
         dt Start Date
         dd
-          = renderDate(targetUser.enrollee_start_date)
+          = renderDate(targetUser.enrolleeStartDate)
           &nbsp;
-          small= `(${weeksAgoInWords(targetUser.enrollee_start_date)})`
+          small= `(${weeksAgoInWords(targetUser.enrolleeStartDate)})`
 
         dt GitHub
         dd
@@ -66,13 +69,13 @@ block content
           = `${targetUser.pd_days_used||0}/${targetUser.pd_days_remaining||0}`
 
         for n in [1,2,3,4,5]
-          - phaseStartDate = targetUser[`date_phase_${n}`]
+          - phaseStartDate = targetUser[`phase${n}StartDate`]
           dt Started Phase #{n}
           dd
             if phaseStartDate
               = renderDate(phaseStartDate)
               &nbsp;
-              small= `(${timeAgoInWords(phaseStartDate)})`
+              small= `(${weeksAgoInWords(phaseStartDate)})`
             else
               | n/a
 

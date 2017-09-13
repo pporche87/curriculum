@@ -97,10 +97,30 @@ const filterForActiveUsers = users =>
 
 const getHubspotDataForUser = user =>
   hubspot.getContactByEmail(user.email).then(hubspotContact =>
-    Object.assign(user, hubspotContact)
+    mergeHubspotContactIntoUser(user, hubspotContact)
   )
 
 const mergeHubspotContactIntoUser = (user, contact) => {
-  user.hubspot = contact
+  user.errors = []
   user.vid = contact.vid
+
+  if (
+    typeof user.phase === 'number' &&
+    user.phase !== contact.phase
+  ){
+    user.errors.push('phases in IDM and hubspot do not mach')
+  }
+
+  user.enrolleeStartDate = contact.enrollee_start_date
+
+  user.phase1StartDate = contact.date_phase_1
+  user.phase2StartDate = contact.date_phase_2
+  user.phase3StartDate = contact.date_phase_3
+  user.phase4StartDate = contact.date_phase_4
+  user.phase5StartDate = contact.date_phase_5
+  user.currentPhaseStartDate = contact.phase_week
+
+
+  user.hubspot = contact // TEMP
+  return user
 }

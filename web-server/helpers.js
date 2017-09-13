@@ -17,10 +17,18 @@ module.exports = app => {
   app.locals.escapeHTML = escapeHTML
   app.locals.renderMarkdown = renderMarkdown
 
-  app.locals.renderDate = date => moment(date).format("YYYY/MM/DD")
-  app.locals.renderDatetime = date => moment(date).format("YYYY/MM/DD HH:mm")
-  app.locals.timeAgoInWords = date => moment(date).fromNow()
-  app.locals.weeksAgoInWords = date => moment().diff(moment(date), 'week')+' weeks ago'
+  app.locals.renderDate = date =>
+    date ? moment(date).format("YYYY/MM/DD") : null
+
+  app.locals.renderDatetime = date =>
+    date ? moment(date).format("YYYY/MM/DD HH:mm") : null
+
+  app.locals.timeAgoInWords = date =>
+    date ? moment(date).fromNow() : null
+
+  app.locals.weeksAgoInWords = date =>
+    date ? moment().diff(moment(date), 'week')+' weeks ago' : null
+
 
   app.locals.renderSkill = skill =>
     renderMarkdown(skill.rawText).slice(3,-5).trim()
