@@ -74,7 +74,15 @@ module.exports = class BackOffice {
   }
 
   getHubspotDataForUsers(users){
-    return this.hubspot.getHubspotDataForUsers(users)
+    const emails = users.map(user => user.email)
+    return this.hubspot.getContactsByEmail(emails).then(contacts => {
+      users.forEach(user => {
+        const contact = contacts.find(contact =>
+          contact.email === user.email
+        )
+        if (contact) mergeHubspotContactIntoUser(user, contact)
+      })
+    })
   }
 }
 
@@ -91,3 +99,8 @@ const getHubspotDataForUser = user =>
   hubspot.getContactByEmail(user.email).then(hubspotContact =>
     Object.assign(user, hubspotContact)
   )
+
+const mergeHubspotContactIntoUser = (user, contact) => {
+  user.hubspot = contact
+  user.vid = contact.vid
+}

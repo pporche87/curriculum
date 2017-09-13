@@ -140,49 +140,35 @@ const getAllContacts = (options={}) => {
   })
 }
 
-
 const getContactByEmail = (email) => {
   return new Promise((resolve, reject) => {
     hubspot.contacts.getByEmail(email, (error, response) => {
       if (error) return reject(error)
       if (response.status === 'error') return reject(response.message)
-      const contact = extractContentFromResponse(response)
+      const contact = processContact(response)
       contact.vid = response.vid
       resolve(contact)
     })
   })
 }
 
-const getHubspotDataForUsers = users => {
+const getContactsByEmail = emails => {
   return new Promise((resolve, reject) => {
-    const emails = users.map(user => user.email)
     hubspot.contacts.getByEmailBatch(emails, (error, response) => {
       if (error) return reject(error)
       if (response.status === 'error') return reject(response.message)
-      // console.log('-=-=-=-=-=', response)
-      const contacts = Object.values(response).map(extractContentFromResponse)
-      users.forEach(user => {
-        const contact = contacts.find(contact =>
-          contact.email === user.email
-        )
-        if (!contact) return
-        mergeContactIntoUser(user, contact)
-      })
-      resolve(users)
+      const contacts = Object.values(response).map(processContact)
+      resolve(contacts)
     })
   })
 }
 
-const mergeContactIntoUser = (user, contact) => {
-  user.hubspot = contact
-  user.vid = contact.vid
-}
 
-const extractContentFromResponse = function(response){
+const processContact = function(_contact){
   const contact = {}
-  contact.vid = response.vid
+  contact.vid = _contact.vid
   Object.entries(USER_PROPERTIES).forEach(([propName, propType]) => {
-    const prop = response.properties[propName]
+    const prop = _contact.properties[propName]
     if (!prop) {
       contact[propName] = null
       return
@@ -224,5 +210,5 @@ const parseDate = input => {
 module.exports = {
   getAllContacts,
   getContactByEmail,
-  getHubspotDataForUsers
+  getContactsByEmail
 }
