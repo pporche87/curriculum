@@ -144,7 +144,7 @@ const getContactByEmail = (email) => {
   return new Promise((resolve, reject) => {
     hubspot.contacts.getByEmail(email, (error, response) => {
       if (error) return reject(error)
-      if (response.status === 'error') return reject(response.message)
+      if (response.status === 'error') return reject(new Error(response.message))
       const contact = processContact(response)
       contact.vid = response.vid
       resolve(contact)
@@ -156,7 +156,7 @@ const getContactsByEmail = emails => {
   return new Promise((resolve, reject) => {
     hubspot.contacts.getByEmailBatch(emails, (error, response) => {
       if (error) return reject(error)
-      if (response.status === 'error') return reject(response.message)
+      if (response.status === 'error') return reject(new Error(response.message))
       const contacts = Object.values(response).map(processContact)
       resolve(contacts)
     })

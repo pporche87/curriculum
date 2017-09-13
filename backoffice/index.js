@@ -28,6 +28,7 @@ module.exports = class BackOffice {
 
     return this.idm.getAllUsers()
       .then(users => {
+
         if (options.learners) users = users.filter(filterForLearners)
         if (options.active) users = users.filter(filterForActiveUsers)
         const promises = []
@@ -96,12 +97,17 @@ const filterForActiveUsers = users =>
 
 
 const getHubspotDataForUser = user =>
-  hubspot.getContactByEmail(user.email).then(hubspotContact =>
-    mergeHubspotContactIntoUser(user, hubspotContact)
-  )
+  hubspot.getContactByEmail(user.email)
+    .then(hubspotContact =>
+      mergeHubspotContactIntoUser(user, hubspotContact)
+    )
+    .catch(error => {
+      if (error.message.includes('contact does not exist')) return user
+      throw error
+    })
 
 const mergeHubspotContactIntoUser = (user, contact) => {
-  user.errors = []
+  user.errors = user.errors || []
   user.vid = contact.vid
 
   if (
@@ -120,7 +126,5 @@ const mergeHubspotContactIntoUser = (user, contact) => {
   user.phase5StartDate = contact.date_phase_5
   user.currentPhaseStartDate = contact.phase_week
 
-
-  user.hubspot = contact // TEMP
   return user
 }
