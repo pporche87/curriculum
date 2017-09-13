@@ -11,7 +11,7 @@ class IDMClient {
     return idmGraphQLFetch({query, variables}, this.lgJWT)
   }
 
-  getAllLearners(){
+  getAllUsers(){
     return this.query(`
       query {
         findUsers {
@@ -33,9 +33,14 @@ class IDMClient {
       }
     `)
     .then(response => response.data.findUsers)
-    .then(users =>
+  }
+
+  getAllLearners(){
+    this.getAllUsers().then(users =>
       users.filter(user =>
-        !ROBOT_HANDLES.includes(user.handle)
+        !ROBOT_HANDLES.includes(user.handle) &&
+        user.roles.includes('learner') &&
+        !user.roles.includes('staff')
       )
     )
   }

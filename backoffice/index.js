@@ -14,23 +14,45 @@ module.exports = class BackOffice {
     this.hubspot = hubspot
   }
 
-  getAllLearners(){
-    return this.idm
-      .getAllLearners()
-      .then(learners => this.getPhasesForLearners(learners))
-  }
-
-  getActiveLearners(){
-    return this
-      .getAllLearners()
-      .then(filterForActiveLearners)
-  }
-
-  getLearnerByHandle(handle, options={}){
+  getAllUsers(options={}){
     options = Object.assign(
       // default options
       {
-        includeHubspotData: true,
+        includePhases: false,
+      },
+      options
+    )
+
+    return this.idm.getAllUsers()
+      .then(learners => {
+        if (options.includePhases) return this.getPhasesForLearners(learners)
+        return learners
+      })
+  }
+
+  getActiveUsers(){
+    return this.getAllUsers().then(filterForActive)
+  }
+
+  getAllLearners(){
+    return this.getAllUsers()
+      .then(users =>
+        users.filter(user =>
+          user.roles.includes('learner') &&
+          !user.roles.includes('staff')
+        )
+      )
+  }
+
+  getActiveLearners(){
+    return this.getAllLearners().then(filterForActive)
+  }
+
+  getUserByHandle(handle, options={}){
+    options = Object.assign(
+      // default options
+      {
+        includeHubspotData: false,
       },
       options
     )
@@ -51,7 +73,7 @@ module.exports = class BackOffice {
 }
 
 
-const filterForActiveLearners = getAllLearners =>
+const filterForActive = getAllLearners =>
   getAllLearners.filter(learner => learner.active)
 
 

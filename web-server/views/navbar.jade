@@ -55,9 +55,17 @@ nav.navbar.navbar-inverse(role='navigation')
         li.dropdown
           a(href='/calendar') Calendar
 
-        if process.env.NODE_ENV === 'development'
+        if user.isAdmin
           li.dropdown
-            a(href='/digest') Digest
+            a.dropdown-toggle(href='#', data-toggle='dropdown')
+              | Admin
+              b.caret
+            ul.dropdown-menu(role='menu')
+              li
+                a(href='/admin/digest') Digest
+            ul.dropdown-menu(role='menu')
+              li
+                a(href='/admin/users') Users
 
       .navbar-text.navbar-right
         .list-inline
