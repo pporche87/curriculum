@@ -1,3 +1,4 @@
+require('../environment')
 const { idmGraphQLFetch } = require('@learnersguild/idm-jwt-auth/lib/utils')
 const hubspot = require('./hubspot')
 
