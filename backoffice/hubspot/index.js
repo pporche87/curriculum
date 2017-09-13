@@ -146,7 +146,7 @@ const getContactByEmail = (email) => {
     hubspot.contacts.getByEmail(email, (error, response) => {
       if (error) return reject(error)
       if (response.status === 'error') return reject(response.message)
-      const contact = extractProperties(response)
+      const contact = extractContentFromResponse(response)
       contact.vid = response.vid
       resolve(contact)
     })
@@ -160,25 +160,31 @@ const getHubspotDataForUsers = users => {
       if (error) return reject(error)
       if (response.status === 'error') return reject(response.message)
       // console.log('-=-=-=-=-=', response)
-      const contacts = Object.values(response).map(extractProperties)
+      const contacts = Object.values(response).map(extractContentFromResponse)
       users.forEach(user => {
         const contact = contacts.find(contact =>
           contact.email === user.email
         )
         if (!contact) return
-        user.hubspot = contact
+        mergeContactIntoUser(user, contact)
       })
       resolve(users)
     })
   })
 }
 
-const extractProperties = function(contact){
-  const properties = {}
+const mergeContactIntoUser = (user, contact) => {
+  user.hubspot = contact
+  user.vid = contact.vid
+}
+
+const extractContentFromResponse = function(response){
+  const contact = {}
+  contact.vid = response.vid
   Object.entries(USER_PROPERTIES).forEach(([propName, propType]) => {
-    const prop = contact.properties[propName]
+    const prop = response.properties[propName]
     if (!prop) {
-      properties[propName] = null
+      contact[propName] = null
       return
     }
     let value = prop.value
@@ -198,9 +204,9 @@ const extractProperties = function(contact){
     if (propType === Phase && typeof value !== 'number')
       value = Number.parseInt(value.replace('Phase ',''))
 
-    properties[propName] = value
+    contact[propName] = value
   })
-  return properties
+  return contact
 }
 
 const parseDate = input => {
