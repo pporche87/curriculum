@@ -8,9 +8,9 @@ block content
       .alert.alert-danger(role="alert")= error
 
   .row
-    .col-md-5
-      img(src=targetUser.avatarUrl)
-    .col-md-7
+    .col-md-5.cal-sm-12
+      img.user-avatar(src=targetUser.avatarUrl)
+    .col-md-7.cal-sm-12
       dl
         dt Name
         dd= targetUser.name
@@ -24,7 +24,7 @@ block content
           &nbsp;
           span= targetUser.phase
           &nbsp;
-          small= `(week ${targetUser.currentPhaseStartDate}/8)`
+          small= `(week ${targetUser.currentPhaseWeekNumber}/8)`
 
         dt Start Date
         dd

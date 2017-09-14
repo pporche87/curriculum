@@ -1,10 +1,39 @@
 extends ../../layout
 
 block content
-  h1 Users - Admin
-
-  ul
-    for user in users
-      li
-        a(href="/admin/users/#{user.handle}")= user.handle
-        pre= inspect(user)
+  table.table.table-sm.admin-users-table
+    thead
+      tr
+        th
+        th
+        th Active
+        th Name
+        th Handle
+        th Phase
+        th Hubspot VID
+    tbody
+      for user in users
+        tr
+          td
+            if user.errors && user.errors.length > 0
+              small.glyphicon.glyphicon-warning-sign(title=user.errors.join("\n"))
+            else
+              &nbsp;
+          td
+            img.user-avatar.user-avatar-small(src=user.avatarUrl)
+          td
+            input(type="checkbox" checked=user.active disabled)
+          td
+            a(href="/admin/users/#{user.handle}")= user.name
+          td
+            a(href=user.profileUrl target="_blank")= user.handle
+          td
+            if user.phase
+              span Phase
+              &nbsp;
+              span= user.phase
+              if user.currentPhaseWeekNumber
+                &nbsp;
+                small= `(${user.currentPhaseWeekNumber}/8)`
+          td
+            a(href="https://app.hubspot.com/contacts/2144508/contact/#{user.vid}/" target="_blank")= user.vid

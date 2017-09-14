@@ -3,6 +3,7 @@ const { idmGraphQLFetch } = require('@learnersguild/idm-jwt-auth/lib/utils')
 const { IDMClient } = require('./idm')
 const { EchoClient } = require('./echo')
 const hubspot = require('./hubspot')
+const { isValidPhase, isUserALearner } = require('./util')
 
 const ROBOT_HANDLES = ['echo-bot','lg-bot']
 
@@ -28,12 +29,15 @@ module.exports = class BackOffice {
 
     return this.idm.getAllUsers()
       .then(users => {
-
+        // filters
         if (options.learners) users = users.filter(filterForLearners)
         if (options.active) users = users.filter(filterForActiveUsers)
+
+        // load extra data
         const promises = []
         if (options.includePhases) promises.push(this.getPhasesForUsers(users))
         if (options.includeHubspotData) promises.push(this.getHubspotDataForUsers(users))
+
         return Promise.all(promises).then(_ => users)
       })
   }
@@ -110,13 +114,6 @@ const mergeHubspotContactIntoUser = (user, contact) => {
   user.errors = user.errors || []
   user.vid = contact.vid
 
-  if (
-    typeof user.phase === 'number' &&
-    user.phase !== contact.phase
-  ){
-    user.errors.push('phases in IDM and hubspot do not mach')
-  }
-
   user.enrolleeStartDate = contact.enrollee_start_date
 
   user.phase1StartDate = contact.date_phase_1
@@ -124,7 +121,18 @@ const mergeHubspotContactIntoUser = (user, contact) => {
   user.phase3StartDate = contact.date_phase_3
   user.phase4StartDate = contact.date_phase_4
   user.phase5StartDate = contact.date_phase_5
-  user.currentPhaseStartDate = contact.phase_week
+  user.currentPhaseWeekNumber = contact.phase_week
+
+  user.phase = (
+    isValidPhase(user.phase) ? user.phase :
+    isValidPhase(contact.phase) ? contact.phase :
+    user.phase5StartDate ? 5 :
+    user.phase4StartDate ? 4 :
+    user.phase3StartDate ? 3 :
+    user.phase2StartDate ? 2 :
+    user.phase1StartDate ? 1 :
+    null
+  )
 
   return user
 }
