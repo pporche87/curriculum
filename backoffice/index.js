@@ -19,7 +19,7 @@ module.exports = class BackOffice {
     options = Object.assign(
       // default options
       {
-        active: false,
+        active: true,
         learners: false,
         phase: undefined,
         includePhases: false,
@@ -58,18 +58,9 @@ module.exports = class BackOffice {
       )
   }
 
-  getActiveUsers(options={}){
-    options.active = true
-    return this.getAllUsers(options)
-  }
-
   getAllLearners(options={}){
     options.learners = true
     return this.getAllUsers(options)
-  }
-
-  getActiveLearners(){
-    return this.getAllLearners().then(filterForActiveUsers)
   }
 
   getUserByHandle(handle, options={}){
