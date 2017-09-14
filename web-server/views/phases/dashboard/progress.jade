@@ -3,19 +3,51 @@ extends ../../layout
 block content
   h1 Phase #{phase.number} Progress
 
+  dl
+    dd Number of learners on track:
+    dt= learners.filter(l => l.phaseProgress.onTrack).length
+    dd Number of learners NOT on track:
+    dt= learners.filter(l => !l.phaseProgress.onTrack).length
+
   ul.list-unstyled
     for learner in learners
+      - const p = learner.phaseProgress
       li
         div
           a(href="/phases/#{phase.number}/dashboard/learners/#{learner.handle}")= learner.handle
         div
           small
-            span phase:
-            span #{learner.currentPhaseWeekNumber}/8
-          progress.skill-progress(value=learner.currentPhaseWeekNumber max=8)
+            span Phase Completion:
+            &nbsp;
+            span #{p.phaseNumerator}&nbsp;/&nbsp;#{p.phaseDenominator}
+          progress.skill-progress(value=p.phaseNumerator max=p.phaseDenominator)
         div
           small
-            span skills:
-            span #{learner.skillsNumerator}&nbsp;/&nbsp;#{learner.skillsDenominator}
-          progress.skill-progress(value=learner.skillsNumerator max=learner.skillsDenominator)
+            span Progress:
+            &nbsp;
+            span #{p.progressNumerator}&nbsp;/&nbsp;#{p.progressDenominator}
+          progress.skill-progress(
+            value=p.progressNumerator
+            max=p.progressDenominator
+          )
+        div
+          small
+            span Expected Progress:
+            &nbsp;
+            span #{p.expectedProgressNumerator}&nbsp;/&nbsp;#{p.expectedProgressDenominator}
+          progress.skill-progress(
+            value=p.expectedProgressNumerator
+            max=p.expectedProgressDenominator
+          )
+        div
+          small
+            span On Track:
+            &nbsp;
+            span
+              if p.onTrack
+                i.glyphicon.glyphicon-ok
+                span on track
+              else
+                i.glyphicon.glyphicon-remove
+                span not on track
         hr

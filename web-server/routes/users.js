@@ -6,7 +6,9 @@ const commands = require('../../database/commands')
 module.exports = app => {
 
   app.get('/users', (request, response, next) => {
-    request.backOffice.getActiveUsers({includePhases: true}).then(users => {
+    request.backOffice.getAllUsers({
+      includePhases: true,
+    }).then(users => {
       response.render('users/index', { users })
     })
     .catch(next)

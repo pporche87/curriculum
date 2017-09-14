@@ -18,8 +18,9 @@ block content
         dt Name
         dd= targetUser.name
 
-        dt Nickname
-        dd= targetUser.nickname
+        if targetUser.nickname
+          dt Nickname
+          dd= targetUser.nickname
 
         dt Phase
         dd
@@ -61,16 +62,22 @@ block content
 
         dt Created At
         dd
-          span= renderDate(targetUser.createdAt)
-          &nbsp;
-          small= `(${timeAgoInWords(targetUser.createdAt)})`
+          if targetUser.createdAt
+            span= renderDate(targetUser.createdAt)
+            &nbsp;
+            small= `(${timeAgoInWords(targetUser.createdAt)})`
+          else
+            | n/a
 
 
         dt Last Modified
         dd
-          = renderDate(targetUser.lastmodifieddate)
-          &nbsp;
-          small= `(${timeAgoInWords(targetUser.lastmodifieddate)})`
+          if targetUser.lastmodifieddate
+            = renderDate(targetUser.lastmodifieddate)
+            &nbsp;
+            small= `(${timeAgoInWords(targetUser.lastmodifieddate)})`
+          else
+            | n/a
 
         dt Personal Days
         dd

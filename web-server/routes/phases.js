@@ -54,11 +54,10 @@ module.exports = app => {
 
   app.get('/phases/:phaseNumber/dashboard/progress', (request, response, next) => {
     const { phase } = request
-    request.getUsersForPhaseWithCheckLog(request.phase.number)
+    request.getUsersForPhaseWithCheckLog(phase.number)
       .then(learners => {
         learners.forEach(learner => {
-          learner.skillsDenominator = phase.skills.length
-          learner.skillsNumerator = learner.checkedSkills.filter(skill => phase.skills.includes(skill)).length
+          calculatePhaseProgressForLearner(phase, learner)
         })
         learners.sort((a,b)=>
           b.skillsNumerator - a.skillsNumerator
@@ -69,9 +68,10 @@ module.exports = app => {
   })
 
   app.get('/phases/:phaseNumber/dashboard/learners', (request, response, next) => {
-    request.backOffice.getActiveLearners()
+    request.backOffice.getAllLearners({
+      phase: request.phase.number
+    })
       .then(learners => {
-        learners = learners.filter(learner => learner.phase === request.phase.number)
         response.render('phases/dashboard/learners/index', {learners})
       })
       .catch(next)
@@ -110,4 +110,17 @@ module.exports = app => {
   app.get('/phases/:phaseNumber/*', (request, response, next) => {
     response.renderFile(request.path)
   })
+}
+
+const calculatePhaseProgressForLearner = (phase, learner) => {
+  const p = learner.phaseProgress = {}
+  p.progressNumerator = learner.checkedSkills.filter(skill => phase.skills.includes(skill)).length
+  p.progressDenominator = phase.skills.length
+  p.phaseNumerator = learner.currentPhaseWeekNumber
+  p.phaseDenominator = 8
+  p.expectedProgressNumerator = (
+    Math.round(p.progressDenominator / p.phaseDenominator) * p.phaseNumerator
+  )
+  p.expectedProgressDenominator = p.progressDenominator
+  p.onTrack = p.progressNumerator >= p.expectedProgressNumerator
 }

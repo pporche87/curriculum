@@ -7,6 +7,7 @@ block content
 
   if targetUser.exit_phase
     h6 Exit Phase: #{targetUser.exit_phase}
+
   else if targetUser.phase
     h6 Phase: #{targetUser.phase}
 
@@ -19,5 +20,8 @@ block content
       a(href="mailto:"+targetUser.email) Email
     li
       a(href="https://learnersguild.slack.com/messages/@"+targetUser.handle, target="_blank") Slack DM
+    if user.isAdmin
+      li
+        a(href="/admin/users/"+targetUser.handle) Admin
 
   img(src=targetUser.avatarUrl)
