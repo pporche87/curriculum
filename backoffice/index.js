@@ -3,7 +3,7 @@ const { idmGraphQLFetch } = require('@learnersguild/idm-jwt-auth/lib/utils')
 const { IDMClient } = require('./idm')
 const { EchoClient } = require('./echo')
 const hubspot = require('./hubspot')
-const { isValidPhase, isUserALearner } = require('./util')
+const { isValidPhase, isUserALearner, isUserActive } = require('./util')
 
 const ROBOT_HANDLES = ['echo-bot','lg-bot']
 
@@ -21,17 +21,28 @@ module.exports = class BackOffice {
       {
         active: false,
         learners: false,
+        phase: undefined,
         includePhases: false,
         includeHubspotData: false,
       },
       options
     )
 
+    if (isValidPhase(options.phase)){
+      options.includePhases = true
+    }else{
+      delete options.phase
+    }
+
     return this.idm.getAllUsers()
       .then(users => {
+        if (!Array.isArray(users)){
+          throw new Error(`${typeof users} is not array`)
+        }
+
         // filters
-        if (options.learners) users = users.filter(filterForLearners)
-        if (options.active) users = users.filter(filterForActiveUsers)
+        if (options.learners) users = users.filter(isUserALearner)
+        if (options.active) users = users.filter(isUserActive)
 
         // load extra data
         const promises = []
@@ -40,6 +51,11 @@ module.exports = class BackOffice {
 
         return Promise.all(promises).then(_ => users)
       })
+      .then(users =>
+        options.phase
+          ? users.filter(user => user.phase === options.phase)
+          : users
+      )
   }
 
   getActiveUsers(options={}){
@@ -90,15 +106,6 @@ module.exports = class BackOffice {
     })
   }
 }
-
-const filterForLearners = users =>
-  users.filter(user =>
-    user.roles.includes('learner') && !user.roles.includes('staff')
-  )
-
-const filterForActiveUsers = users =>
-  users.filter(user => user.active)
-
 
 const getHubspotDataForUser = user =>
   hubspot.getContactByEmail(user.email)

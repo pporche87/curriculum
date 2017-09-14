@@ -162,7 +162,10 @@ module.exports = app => {
     }
 
     request.getUsersForPhaseWithCheckLog = phaseNumber => {
-      return request.backOffice.getActiveLearnersForPhase(phaseNumber)
+      return request.backOffice.getAllLearners({
+        phase: phaseNumber,
+        active: true,
+      })
         .then(learners => {
           return queries.getCheckLogsForUsers(learners.map(l => l.id))
             .then(checkLogsByUserId => {
