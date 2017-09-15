@@ -6,18 +6,22 @@ const commands = require('../../database/commands')
 module.exports = app => {
 
   app.get('/users', (request, response, next) => {
-    request.backOffice.getActiveLearners().then(users => {
-      response.render('users/index', { users })
+    request.backOffice.getAllUsers({
+      includePhases: true,
+    }).then(users => {
+      response.render('users/index', { users, title: 'Users' })
     })
     .catch(next)
   })
 
   app.get('/users/:handle', (request, response, next) => {
     const { handle } = request.params
-    request.backOffice.getActiveLearners().then(users => {
-      const user = users.find(user => user.handle === handle)
-      if (!user) return response.renderNotFound()
-      response.render('users/show', { user })
+    request.backOffice.getUserByHandle(handle, {
+      includeHubspotData: true,
+    })
+    .then(targetUser => {
+      if (!targetUser) return response.renderNotFound()
+      response.render('users/show', { targetUser, title: handle })
     })
     .catch(next)
   })

@@ -34,6 +34,8 @@ require('./routes/phases')(app)
 require('./routes/modules')(app)
 require('./routes/calendar')(app)
 require('./routes/cos')(app)
+require('./routes/backoffice')(app)
+require('./routes/profile')(app)
 
 app.get('/', (request, response, next) => {
   response.renderMarkdownFile(`/README.md`)
